@@ -95,6 +95,7 @@ def rms(señal):
     return np.sqrt(np.mean(señal**2))
 
 def clasificar_segmentos(señal):
+
     prefatiga = []
     postfatiga = []
 
@@ -109,16 +110,26 @@ def clasificar_segmentos(señal):
             prefatiga.append(segmento)
         else:
             postfatiga.append(segmento)
-
+    prefatiga = np.array(prefatiga, dtype=np.float32)
+    postfatiga = np.array(postfatiga, dtype=np.float32)
     return prefatiga, postfatiga
 
 if __name__ == "__main__":
     emgs, time = loadEMGs("selected_emgs/")
     #envolvente_sup, emg_fft, frequency = process_signal(emgs[0])
     #new_signal = smooth_signal(envolvente_sup)   
-    for señal in emgs:
+    for m, señal in enumerate(emgs):
         prefatiga, postfatiga = clasificar_segmentos(señal)
-        print(postfatiga[0].shape)
+        for n in range(prefatiga.shape[0]):
+            if n > 0 and n < N_ventanas-1:
+                continue
+            plt.subplot(5,2,m+1)
+            freq, suavizada = plot_emg_window(postfatiga[n],n,dV,smooth_window=500,int_freqs=True)
+
+        plt.title('EMG {}'.format(m+1),fontsize=10)
+        plt.legend()
+    plt.show()
+        
     
     """
     plt.figure(figsize=(15,12))
