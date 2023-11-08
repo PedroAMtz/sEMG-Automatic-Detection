@@ -6,19 +6,6 @@ import matplotlib.pyplot as plt
 from scipy.fft import fft, fftfreq
 from scipy.signal import savgol_filter
 
-# Parámetros/variables globales
-Fs = 200
-tT = 120
-N_ventanas = 12
-dV = (Fs*tT)/N_ventanas
-
-N = Fs*tT
-n = np.arange(N)
-T = N/Fs
-freq = (n/T)
-
-frecN = int((Fs*T)/2)
-
 def loadEMGs(ruta: str) -> Tuple[np.ndarray, np.ndarray]:
     emgs = []
     for _, data in enumerate(os.listdir(ruta)):
@@ -91,58 +78,56 @@ def plot_emg_window(emg_,n,dV,smooth_window=150,order=2,int_freqs=False):
 
     return freq, suavizada
 
-def rms(señal):
-    return np.sqrt(np.mean(señal**2))
+def extract_features(freq, suavizada):
+    amplitude_rms = np.sqrt(np.mean(np.square(suavizada)))
 
-def clasificar_segmentos(señal):
+    freq_media = np.mean(freq * suavizada)
 
-    prefatiga = []
-    postfatiga = []
+    freq_mediana = np.median(freq * suavizada)
 
-    criterio = rms(señal)
+    mask_0_50 = (freq >= 0) & (freq < 50)
+    mask_50_100 = (freq >= 50) & (freq < 100)
+    potencia_0_50 = np.sum(suavizada[mask_0_50])
+    potencia_50_100 = np.sum(suavizada[mask_50_100])
+    ratio_potencia = potencia_0_50 / potencia_50_100
+    
+    features = {
+        'amplitude_rms': amplitude_rms,
+        'freq_media': freq_media,
+        'freq_mediana': freq_mediana,
+        'ratio_potencia': ratio_potencia
+    }
 
-    for n in range(N_ventanas):
-        inicio = int(n*dV)
-        final  = int((n+1)*dV)
-        segmento = señal[inicio:final]
-
-        if rms(segmento) < criterio:
-            prefatiga.append(segmento)
-        else:
-            postfatiga.append(segmento)
-    prefatiga = np.array(prefatiga, dtype=np.float32)
-    postfatiga = np.array(postfatiga, dtype=np.float32)
-    return prefatiga, postfatiga
+    return features
 
 if __name__ == "__main__":
-    emgs, time = loadEMGs("selected_emgs/")
-    #envolvente_sup, emg_fft, frequency = process_signal(emgs[0])
-    #new_signal = smooth_signal(envolvente_sup)   
-    for m, señal in enumerate(emgs):
-        prefatiga, postfatiga = clasificar_segmentos(señal)
-        for n in range(prefatiga.shape[0]):
-            if n > 0 and n < N_ventanas-1:
-                continue
-            plt.subplot(5,2,m+1)
-            freq, suavizada = plot_emg_window(postfatiga[n],n,dV,smooth_window=500,int_freqs=True)
 
-        plt.title('EMG {}'.format(m+1),fontsize=10)
-        plt.legend()
-    plt.show()
-        
-    
-    """
+    # Parámetros/variables globales
+    Fs = 200
+    tT = 120
+    N_ventanas = 22
+    dV = (Fs*tT)/N_ventanas
+
+    N = Fs*tT
+    n = np.arange(N)
+    T = N/Fs
+    freq = (n/T)
+
+    frecN = int((Fs*T)/2)
+
+    emgs, time = loadEMGs("selected_emgs/")
+
     plt.figure(figsize=(15,12))
 
     for m in range(10):
-
         for n in range(N_ventanas):
             if n > 0 and n < N_ventanas-1:
                 continue
             plt.subplot(5,2,m+1)
             freq, suavizada = plot_emg_window(emgs[m],n,dV,smooth_window=500,int_freqs=True)
+            features = extract_features(freq, suavizada)
+            print(features)
 
         plt.title('EMG {}'.format(m+1),fontsize=10)
         plt.legend()
     plt.show()
-    """
