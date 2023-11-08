@@ -101,7 +101,7 @@ def extract_features(freq, suavizada):
     return features
 
 if __name__ == "__main__":
-
+    # Pruebas de ramas
     # Parámetros/variables globales
     Fs = 200
     tT = 120
