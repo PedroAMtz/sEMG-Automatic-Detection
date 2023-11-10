@@ -8,9 +8,11 @@ This script performs fatigue inference on user-provided EMG (Electromyography) s
 ### Results
 
 **ROC Curve**
+
 ![Curva ROC](Auc_curve.png)
 
 **Features**
+
 ![Features](features.png)
 
 
@@ -46,7 +48,7 @@ This script performs fatigue inference on user-provided EMG (Electromyography) s
 
 2. Run the inference.py script:
     ```bash
-    cpython inference.py path/to/emg/folder
+    python inference.py path/to/emg/folder
 Replace path/to/emg/folder with the path to the folder containing your EMG signal files.
 
 3. The script will list the available EMG files in the specified folder. Enter the number corresponding to the file you want to evaluate.
