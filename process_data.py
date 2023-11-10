@@ -20,6 +20,7 @@ def loadEMGs(ruta: str) -> Tuple[np.ndarray, np.ndarray]:
 def plot_emg_window(emg_,n,dV,smooth_window=150,order=2,int_freqs=False):
     p_inicio = int(n*dV)
     p_final  = int((n+1)*dV)
+    Fs = 200
 
     windowsize = 2
 

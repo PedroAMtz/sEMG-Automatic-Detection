@@ -34,3 +34,5 @@ if __name__ == "__main__":
     plt.ylabel('TP Rate')
     plt.title('ROC Curve')
     plt.show()
+    lgb.plot_importance(model)
+    plt.show()
