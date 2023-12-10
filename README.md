@@ -17,6 +17,11 @@ This script performs fatigue inference on user-provided EMG (Electromyography) s
 
 
 ---
+**Predictions by the model**
+
+![Predictions](signal_predictions.png)
+
+---
 ## Prerequisites
 
 - Python 3.x installed
